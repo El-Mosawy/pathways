@@ -1,0 +1,13 @@
+# Virtual environment
+proj/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# Mac system files
+.DS_Store
