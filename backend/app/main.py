@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import onboarding  # import the onboarding router I created
 
 # This creates your FastAPI application instance
 # Think of this as turning the lights on in the kitchen
@@ -19,8 +20,11 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
+app.include_router(onboarding.router)  # This tells FastAPI to include the endpoints defined in onboarding.py    
+
 # First endpoint — a health check
 # Confirms the server is alive
 @app.get("/")
 def health_check():
     return {"status": "Pathways API is running"}
+
