@@ -28,7 +28,7 @@ def submit_situation(data: UserSituation):
 @router.post("/submit")
 def submit_situation(data: UserSituation):
     # Pass the validated data to our AI service
-    # The route doesn't know how the AI works — it just calls the service
+    # The route doesn't know how the AI works, it just calls the service
     try: # try means run this block, if anything goes wrong, jump to the except block instead of crashing the server
         action_plan = generate_action_plan(data)
         return {
