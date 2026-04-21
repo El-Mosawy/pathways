@@ -1,10 +1,116 @@
-* {
+/* 
+This file contains global CSS styles that are applied to the entire application.
+Helps keep the styling consistent across all components and provides a base for the app's design.
+*/
+
+/* Import Nunito from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap');
+
+/* ── Design tokens ── */
+:root {
+  --bg: #F2EDE4;
+  --surface: #FAF7F2;
+  --primary: #3D9A8B;
+  --primary-light: #EAF5F3;
+  --primary-dark: #2D7A6C;
+  --text: #1A1A1A;
+  --text-soft: #6B6560;
+  --text-placeholder: #BBBBBB;
+  --border: #E8E0D5;
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --accent-warm: #B07D5A;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ── Base ── */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Background pattern ── */
+/* A subtle repeating compass/path symbol using CSS only */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,<svg width='1440' height='900' viewBox='0 0 1440 900' xmlns='http://www.w3.org/2000/svg'><g fill='none' stroke='%23B07D5A' stroke-linecap='round' stroke-linejoin='round'><path stroke-width='1.8' d='M720 900 C718 860 715 820 712 780'/><path stroke-width='1.8' d='M712 780 C708 740 700 710 688 675'/><path stroke-width='1.8' d='M712 780 C718 742 724 708 732 670'/><path stroke-width='1.6' d='M688 675 C675 640 658 615 640 580'/><path stroke-width='1.6' d='M688 675 C692 638 698 608 700 570'/><path stroke-width='1.6' d='M732 670 C745 635 762 610 778 575'/><path stroke-width='1.6' d='M732 670 C728 632 722 602 720 565'/><path stroke-width='1.4' d='M640 580 C622 548 600 525 578 495'/><path stroke-width='1.4' d='M640 580 C635 545 638 515 632 482'/><path stroke-width='1.4' d='M700 570 C695 535 698 505 693 470'/><path stroke-width='1.4' d='M700 570 C708 535 718 508 725 474'/><path stroke-width='1.4' d='M778 575 C792 542 808 518 822 485'/><path stroke-width='1.4' d='M778 575 C772 538 768 508 765 472'/><path stroke-width='1.2' d='M578 495 C560 465 538 445 515 418'/><path stroke-width='1.2' d='M578 495 C572 462 575 435 568 405'/><path stroke-width='1.2' d='M632 482 C618 450 608 422 598 390'/><path stroke-width='1.2' d='M632 482 C640 450 648 422 652 388'/><path stroke-width='1.2' d='M693 470 C685 438 680 408 675 375'/><path stroke-width='1.2' d='M725 474 C732 442 742 415 748 382'/><path stroke-width='1.2' d='M822 485 C838 453 855 430 870 400'/><path stroke-width='1.2' d='M822 485 C815 452 812 422 808 390'/><path stroke-width='1.2' d='M765 472 C758 440 755 410 750 378'/><path stroke-width='1' d='M515 418 C498 390 478 370 455 345'/><path stroke-width='1' d='M515 418 C508 388 510 362 504 335'/><path stroke-width='1' d='M568 405 C555 375 548 348 540 318'/><path stroke-width='1' d='M568 405 C575 375 582 348 585 316'/><path stroke-width='1' d='M598 390 C588 360 582 332 578 302'/><path stroke-width='1' d='M652 388 C658 358 668 332 672 300'/><path stroke-width='1' d='M675 375 C668 345 665 315 660 285'/><path stroke-width='1' d='M675 375 C682 345 690 318 695 288'/><path stroke-width='1' d='M748 382 C755 352 762 325 765 295'/><path stroke-width='1' d='M748 382 C740 350 735 322 732 290'/><path stroke-width='1' d='M870 400 C885 370 902 348 918 320'/><path stroke-width='1' d='M870 400 C862 368 858 340 854 308'/><path stroke-width='1' d='M808 390 C800 360 795 330 790 300'/><path stroke-width='1' d='M808 390 C815 360 822 332 825 302'/><path stroke-width='0.8' d='M455 345 C438 320 418 302 396 278'/><path stroke-width='0.8' d='M455 345 C448 318 450 292 444 265'/><path stroke-width='0.8' d='M504 335 C492 308 485 282 478 255'/><path stroke-width='0.8' d='M540 318 C528 292 520 265 515 238'/><path stroke-width='0.8' d='M585 316 C592 290 598 265 600 238'/><path stroke-width='0.8' d='M578 302 C570 275 565 250 560 222'/><path stroke-width='0.8' d='M672 300 C678 274 685 250 688 222'/><path stroke-width='0.8' d='M660 285 C652 258 648 232 644 205'/><path stroke-width='0.8' d='M695 288 C702 262 708 238 712 210'/><path stroke-width='0.8' d='M765 295 C772 270 778 245 780 218'/><path stroke-width='0.8' d='M732 290 C724 264 720 238 718 210'/><path stroke-width='0.8' d='M918 320 C932 295 948 275 962 250'/><path stroke-width='0.8' d='M918 320 C910 292 906 265 902 238'/><path stroke-width='0.8' d='M854 308 C845 280 840 255 835 228'/><path stroke-width='0.8' d='M825 302 C832 276 838 252 840 225'/><path stroke-width='0.8' d='M790 300 C782 274 778 248 775 220'/><path stroke-width='0.6' d='M396 278 C380 255 362 238 342 215'/><path stroke-width='0.6' d='M396 278 C390 252 392 228 386 202'/><path stroke-width='0.6' d='M444 265 C432 240 425 215 420 188'/><path stroke-width='0.6' d='M478 255 C468 230 462 205 458 178'/><path stroke-width='0.6' d='M515 238 C505 212 500 188 495 162'/><path stroke-width='0.6' d='M600 238 C608 212 615 188 618 162'/><path stroke-width='0.6' d='M560 222 C552 196 548 170 544 145'/><path stroke-width='0.6' d='M644 205 C636 180 632 155 628 128'/><path stroke-width='0.6' d='M712 210 C718 185 722 160 724 135'/><path stroke-width='0.6' d='M718 210 C710 185 706 160 704 133'/><path stroke-width='0.6' d='M780 218 C788 193 794 168 796 142'/><path stroke-width='0.6' d='M962 250 C975 226 988 205 1000 180'/><path stroke-width='0.6' d='M902 238 C892 212 886 188 882 162'/><path stroke-width='0.6' d='M835 228 C826 202 820 178 816 152'/><path stroke-width='0.6' d='M840 225 C848 200 855 176 858 150'/><path stroke-width='0.6' d='M775 220 C766 195 762 170 758 145'/><path stroke-width='0.4' d='M342 215 C325 193 308 175 288 155'/><path stroke-width='0.4' d='M342 215 C336 190 338 166 332 142'/><path stroke-width='0.4' d='M386 202 C374 178 368 154 362 128'/><path stroke-width='0.4' d='M420 188 C410 164 405 140 400 115'/><path stroke-width='0.4' d='M458 178 C448 154 442 130 438 105'/><path stroke-width='0.4' d='M495 162 C485 138 480 114 475 88'/><path stroke-width='0.4' d='M544 145 C535 120 530 96 525 70'/><path stroke-width='0.4' d='M618 162 C625 138 630 114 632 88'/><path stroke-width='0.4' d='M628 128 C620 104 615 80 610 55'/><path stroke-width='0.4' d='M724 135 C730 110 735 86 736 60'/><path stroke-width='0.4' d='M704 133 C696 108 692 84 688 58'/><path stroke-width='0.4' d='M796 142 C804 118 810 94 812 68'/><path stroke-width='0.4' d='M1000 180 C1012 156 1025 135 1038 110'/><path stroke-width='0.4' d='M882 162 C872 138 866 114 862 88'/><path stroke-width='0.4' d='M816 152 C808 128 804 104 800 78'/><path stroke-width='0.4' d='M858 150 C866 126 872 102 875 76'/><path stroke-width='0.4' d='M758 145 C749 120 745 96 740 70'/><path stroke-width='0.3' d='M288 155 C270 133 252 115 232 95'/><path stroke-width='0.3' d='M332 142 C320 118 314 95 308 70'/><path stroke-width='0.3' d='M362 128 C350 105 344 82 338 58'/><path stroke-width='0.3' d='M400 115 C390 92 384 68 380 43'/><path stroke-width='0.3' d='M438 105 C428 82 422 58 418 33'/><path stroke-width='0.3' d='M475 88 C465 65 458 42 454 16'/><path stroke-width='0.3' d='M525 70 C515 48 508 25 504 0'/><path stroke-width='0.3' d='M632 88 C640 65 645 42 647 16'/><path stroke-width='0.3' d='M610 55 C601 32 596 10 592 -15'/><path stroke-width='0.3' d='M736 60 C742 36 746 12 747 -14'/><path stroke-width='0.3' d='M688 58 C680 34 676 10 672 -16'/><path stroke-width='0.3' d='M812 68 C820 44 825 20 826 -6'/><path stroke-width='0.3' d='M1038 110 C1050 87 1062 65 1075 42'/><path stroke-width='0.3' d='M862 88 C852 64 846 41 842 16'/><path stroke-width='0.3' d='M800 78 C792 54 788 30 784 5'/><path stroke-width='0.3' d='M875 76 C883 52 888 28 890 3'/><path stroke-width='0.3' d='M740 70 C731 46 727 22 722 -3'/></g></svg>");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center bottom;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Everything sits above the background ── */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Utility classes ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+button {
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 0.85rem 2rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(61,154,139,0.3);
+}
+
+.btn-skip {
+  background: transparent;
+  color: var(--text-soft);
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1.5px solid var(--border);
+}
+
+.btn-skip:hover {
+  background: var(--border);
+  color: var(--text);
 }

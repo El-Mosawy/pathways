@@ -28,3 +28,4 @@ app.include_router(onboarding.router)  # This tells FastAPI to include the endpo
 def health_check():
     return {"status": "Pathways API is running"}
 
+ 
