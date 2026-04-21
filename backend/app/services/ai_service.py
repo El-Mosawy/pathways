@@ -1,7 +1,10 @@
-import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 from app.models.onboarding import UserSituation
+from google import genai
+
+# Or use vertexai=True for Google Cloud Vertex AI
+
 
 # Load variables from our .env file into the environment
 load_dotenv()
@@ -9,12 +12,7 @@ load_dotenv()
 # Configure the Gemini client with our API key
 # os.getenv reads a variable from the environment safely
 # If the key is missing it returns None rather than crashing immediately
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-# Initialise the specific Gemini model we want to use
-# gemini-2.5-flash is free tier, fast, and high quality
-# We could experiment with other models later for better quality or more features (e.g. images, longer responses) but for now I am happy with it
-model = genai.GenerativeModel("gemini-2.5-flash")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # This function takes the user's situation and generates a detailed prompt using prompt engineering best practices. The better the prompt, the better the output.
 def build_prompt(situation: UserSituation) -> str:
@@ -110,11 +108,15 @@ def build_prompt(situation: UserSituation) -> str:
     """
 
 # Core function of entire app — takes the user's situation and returns an action plan
+# Could experiment with other models later for better quality or more features (e.g. images, longer responses) but for now I am happy with it
 def generate_action_plan(situation: UserSituation) -> str:
     """
     Takes a validated UserSituation and returns a personalised action plan.
     This is the core function of the entire application.
     """
     prompt = build_prompt(situation)
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model='gemini-2.5-flash', # gemini-2.5-flash is free tier, fast, and high quality
+        contents=prompt
+    )
     return response.text
