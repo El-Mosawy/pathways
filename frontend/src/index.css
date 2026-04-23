@@ -43,7 +43,6 @@ body {
 }
 
 /* ── Background pattern ── */
-/* A subtle repeating compass/path symbol using CSS only */
 body::before {
   content: '';
   position: fixed;
@@ -63,54 +62,23 @@ body::before {
   z-index: 1;
 }
 
-/* ── Utility classes ── */
-.card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2rem;
-  transition: var(--transition);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
-
+/* ── Button base reset ── */
 button {
   font-family: 'Nunito', sans-serif;
   cursor: pointer;
   border: none;
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
   transition: var(--transition);
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  padding: 0.85rem 2rem;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+button:focus {
+  outline: none;
 }
 
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(61,154,139,0.3);
-}
-
-.btn-skip {
-  background: transparent;
-  color: var(--text-soft);
-  padding: 0.6rem 1.2rem;
-  border-radius: 50px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border: 1.5px solid var(--border);
-}
-
-.btn-skip:hover {
-  background: var(--border);
-  color: var(--text);
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

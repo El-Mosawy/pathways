@@ -160,7 +160,8 @@ const styles = {
   languageBtn: {
     padding: '0.6rem 0.4rem',
     borderRadius: '50px',
-    border: '1.5px solid var(--border)',
+    border: 'none',
+    boxShadow: 'inset 0 0 0 1.5px var(--border)',
     background: 'transparent',
     color: 'var(--text)',
     fontSize: '0.85rem',
@@ -171,7 +172,7 @@ const styles = {
   },
   languageBtnSelected: {
     background: 'var(--primary-light)',
-    borderColor: 'var(--primary)',
+    boxShadow: 'inset 0 0 0 1.5px var(--primary)',
     color: 'var(--primary)',
     fontWeight: '700',
   },

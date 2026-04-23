@@ -4,6 +4,7 @@
 
 import { useState } from 'react' // Importing useState hook from React to manage state in the component
 import WelcomeScreen from './components/WelcomeScreen' // Importing the WelcomeScreen component which is a child component that will be rendered inside App
+import OnboardingForm from './components/OnboardingForm'
 
 function App() {
   // currentPage decides which screen is shown
@@ -14,11 +15,20 @@ function App() {
   // This is passed to every subsequent component
   const [selectedLanguage, setSelectedLanguage] = useState(null)
 
+  const [formAnswers, setFormAnswers] = useState(null)
+
   // Called by WelcomeScreen when user picks a language and clicks continue
   // It saves the language and moves to the next page
   function handleLanguageSelect(language) {
     setSelectedLanguage(language)
     setCurrentPage('onboarding')
+  }
+
+  // Called when the onboarding form is complete
+  // answers is the full object of everything the user told us
+  function handleFormComplete(answers) {
+    setFormAnswers(answers)
+    setCurrentPage('loading') // next i'll build the loading screen
   }
 
   return (
@@ -27,16 +37,28 @@ function App() {
         <WelcomeScreen onLanguageSelect={handleLanguageSelect} />
       )}
 
-      {currentPage === 'onboarding' && ( // for now if we on onbaording page just show placeholder
+      {currentPage === 'onboarding' && ( // 
+        <OnboardingForm
+          language={selectedLanguage} // Pass down the selected language as a prop so that OnboardingForm can use it to display content in the correct language.
+          onComplete={handleFormComplete} // Pass down the handleFormComplete function as a prop so that OnboardingForm can call it when the user completes the form and submits their answers.
+        />
+      )}
+
+      {currentPage === 'loading' && ( //Just simple scren for loading page
         <div style={{
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          <div className="card" style={{ padding: '2rem', maxWidth: '480px', width: '90%' }}>
+          <div className="card" style={{
+            padding: '2rem',
+            maxWidth: '480px',
+            width: '90%',
+            textAlign: 'center'
+          }}>
             <p style={{ color: 'var(--text-soft)' }}>
-              Onboarding form coming next — language: {selectedLanguage} 
+              Loading screen coming next...
             </p>
           </div>
         </div>
@@ -46,4 +68,3 @@ function App() {
 }
 
 export default App
-
