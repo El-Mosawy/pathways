@@ -18,6 +18,7 @@ function LoadingScreen({ answers, language, onComplete }) {
     "Checking your entitlements...",
     "Finding what support is available...",
     "Building your personalised plan...",
+    "This can take up to a minute - please wait...",
     "Almost ready...",
   ]
 
@@ -42,31 +43,47 @@ function LoadingScreen({ answers, language, onComplete }) {
   // Fire the API call the moment this component appears on screen
   useEffect(() => {
     async function fetchPlan() {
-      try {
-        // axios.post sends a POST request to our FastAPI backend
-        // The second argument is the request body which are our form answers
-        // plus the language the user chose
-//        const response = await axios.post(
-//          'http://localhost:8000/api/onboarding/submit',
-//          {
-        const response = await axios.post(
-          'https://pathways-6w0u.onrender.com/api/onboarding/submit', // this is the URL of our deployed backend, above is local dev URL
-          {
-            ...answers,
-            preferred_language: language,
-          }
+        const maxRretries = 5
+        const retryDelay = 5000 // 5 seconds
+
+        for (let attempt = 1; attempt <= maxRretries; attempt++) {
+
+        try {
+            // axios.post sends a POST request to our FastAPI backend
+            // The second argument is the request body which are our form answers
+            // plus the language the user chose
+    //        const response = await axios.post(
+    //          'http://localhost:8000/api/onboarding/submit',
+    //          {
+            const response = await axios.post(
+            'https://pathways-6w0u.onrender.com/api/onboarding/submit', // this is the URL of our deployed backend, above is local dev URL
+            {
+                ...answers,
+                preferred_language: language,
+            },
+            {
+                timeout: 90000, // 90 seconds timeout for this request since generating the plan can take up to 60s
+            }
         )
 
         // When the response arrives, pass the action plan up to App.jsx
         onComplete(response.data.action_plan)
+        return // success — exit the retry loop
 
       } catch (error) {
-        console.error('API call failed:', error)
-        // For now we pass a friendly error message up
-        // Later we can build a proper error screen
-        onComplete(null, error)
+        console.log(`Attempt ${attempt} failed:`, error.message)
+
+        if (attempt === maxRetries) {
+          // All retries exhausted — pass error up to App
+          onComplete(null, error)
+          return
+        }
+
+        // Wait before retrying — gives the backend time to wake up
+        await new Promise(resolve => setTimeout(resolve, retryDelay))
       }
     }
+  }
 
     fetchPlan() // Call the async function we defined above
   }, []) // Empty array = run once when component mounts
