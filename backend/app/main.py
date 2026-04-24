@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import onboarding  # import the onboarding router I created
+import asyncio
 
 # This creates your FastAPI application instance
 # Think of this as turning the lights on in the kitchen
@@ -14,7 +15,12 @@ app = FastAPI(
 # Without this, the React frontend would be blocked by the browser
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React dev server address
+    allow_origins=[
+        "http://localhost:5173",
+        "http://pathways-app.vercel.app", # update with your actual deployed frontend URL
+        "*" # temp
+    
+    ],  # React dev server address
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
@@ -28,4 +34,7 @@ app.include_router(onboarding.router)  # This tells FastAPI to include the endpo
 def health_check():
     return {"status": "Pathways API is running"}
 
- 
+# Keepalive endpoint — pinged every 14 minutes to prevent cold starts (cause some hosting platforms put your server to sleep after 15 mins of inactivity)
+@app.get("/ping")
+def ping():
+    return {"status": "alive"}
