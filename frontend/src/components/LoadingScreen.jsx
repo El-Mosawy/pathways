@@ -40,53 +40,45 @@ function LoadingScreen({ answers, language, onComplete }) {
     return () => clearInterval(interval)
   }, [])
 
-  // Fire the API call the moment this component appears on screen
-  useEffect(() => {
+    // Fire the API call the moment this component appears on screen
+    useEffect(() => {
     async function fetchPlan() {
-        const maxRretries = 5
-        const retryDelay = 5000 // 5 seconds
+        const maxRetries = 5 // If the API call fails, we will retry up to 5 times with a delay in between     
+        const retryDelay = 8000  // 8 seconds delay between retries
+        const apiUrl = import.meta.env.VITE_API_URL // Get API URL based on environment (dev or prod) from environment variable
 
-        for (let attempt = 1; attempt <= maxRretries; attempt++) {
-
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            // axios.post sends a POST request to our FastAPI backend
-            // The second argument is the request body which are our form answers
-            // plus the language the user chose
-    //        const response = await axios.post(
-    //          'http://localhost:8000/api/onboarding/submit',
-    //          {
             const response = await axios.post(
-            'https://pathways-6w0u.onrender.com/api/onboarding/submit', // this is the URL of our deployed backend, above is local dev URL
+                // axios.post sends a POST request to the FastAPI backend
+                // The second argument is the request body which are our forms answers and the selected language
+            `${apiUrl}/api/onboarding/submit`, // FastAPI endpoint but now using the environment variable for the base URL
             {
                 ...answers,
                 preferred_language: language,
             },
             {
-                timeout: 90000, // 90 seconds timeout for this request since generating the plan can take up to 60s
+                timeout: 35000 // 40 seconds timeout for the API call (cold starts can take a while)
             }
-        )
+            )
+            onComplete(response.data.action_plan) // If successful, call onComplete with the action plan text from the API response
+            return
 
-        // When the response arrives, pass the action plan up to App.jsx
-        onComplete(response.data.action_plan)
-        return // success — exit the retry loop
+        } catch (error) {
+            console.log(`Attempt ${attempt} failed:`, error.message)
 
-      } catch (error) {
-        console.log(`Attempt ${attempt} failed:`, error.message)
+            if (attempt === maxRetries) {
+            onComplete(null, error) // If we've reached the max retries, call onComplete with an error so App.jsx (for now it just logs to console but later we can show an error message to the user)
+            return
+            }
 
-        if (attempt === maxRetries) {
-          // All retries exhausted — pass error up to App
-          onComplete(null, error)
-          return
+            await new Promise(resolve => setTimeout(resolve, retryDelay))
         }
-
-        // Wait before retrying — gives the backend time to wake up
-        await new Promise(resolve => setTimeout(resolve, retryDelay))
-      }
+        }
     }
-  }
 
-    fetchPlan() // Call the async function we defined above
-  }, []) // Empty array = run once when component mounts
+    fetchPlan()
+    }, [])
 
   return (
     <div style={styles.container}>
@@ -112,7 +104,7 @@ function LoadingScreen({ answers, language, onComplete }) {
         </p>
 
         <p style={styles.subMessage}>
-          This usually takes 10–20 seconds
+          This usually takes up to 60 seconds
         </p>
 
       </div>
@@ -212,4 +204,4 @@ const styles = {
   },
 }
 
-export default LoadingScreen
+export default LoadingScreen // This is a simple loading screen with a breathing animation and rotating messages to keep the user engaged while they wait for the API response. The useEffect hook is used to trigger the API call as soon as the component mounts, and it also handles retrying the API call if it fails, with a delay between retries. When the API call succeeds, it calls the onComplete function passed down from App.jsx with the action plan text, which then updates the state in App.jsx and moves the user to the results page. If it fails after all retries, it calls onComplete with an error, which for now just logs to console but later we can show an error message to the user.

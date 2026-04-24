@@ -7,6 +7,7 @@ import WelcomeScreen from './components/WelcomeScreen' // Importing the WelcomeS
 import OnboardingForm from './components/OnboardingForm'
 import LoadingScreen from './components/LoadingScreen'
 import ResultsPage from './components/ResultsPage'
+import ErrorScreen from './components/ErrorScreen.jsx'
 
 
 function App() {
@@ -40,13 +41,17 @@ function App() {
   // Called when the loading screen gets the API response back
   // plan is the action plan text from Gemini
   function handlePlanReady(plan, error) {
-    if (error) {
-      // Later will build error screen, for now just log to console and stay on loading screen
-      console.error('Plan generation failed:', error)
+    if (error || !plan) {
+      // Something went wrong, show error screen
+      setCurrentPage('error')
       return
     }
     setActionPlan(plan)
     setCurrentPage('results')
+  }
+
+  function handleRetry() {
+    setCurrentPage('loading') // Go back to loading screen which will retry the API call
   }
 
   // Resets everything back to the beginning
@@ -74,7 +79,7 @@ function App() {
         <LoadingScreen
           answers={formAnswers}
           language={selectedLanguage}
-          onComplete={handlePlanReady}
+          onComplete={handlePlanReady} // Pass down the handlePlanReady function as a prop so that LoadingScreen can call it when it gets the API response back, either with the action plan or with an error if something went wrong.
         />
       )}
 
@@ -82,9 +87,14 @@ function App() {
         <ResultsPage
           plan={actionPlan}
           language={selectedLanguage}
-          onRestart={handleRestart}
+          onRestart={handleRestart} // Pass down the handleRestart function as a prop so that ResultsPage can call it when the user clicks the button to start over, the user is sent back to the loading page and API call fires again.
         />
       )}
+
+      {currentPage === 'error' && (
+        <ErrorScreen onRetry={handleRetry} />
+       )
+      }
     </div>
   )
 }

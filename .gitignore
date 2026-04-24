@@ -8,6 +8,7 @@ __pycache__/
 
 # Environment variables
 .env
+frontend/.env.local
 
 # Mac system files
 .DS_Store
