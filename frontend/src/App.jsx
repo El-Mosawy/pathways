@@ -6,6 +6,8 @@ import { useState } from 'react' // Importing useState hook from React to manage
 import WelcomeScreen from './components/WelcomeScreen' // Importing the WelcomeScreen component which is a child component that will be rendered inside App
 import OnboardingForm from './components/OnboardingForm'
 import LoadingScreen from './components/LoadingScreen'
+import ResultsPage from './components/ResultsPage'
+
 
 function App() {
   // currentPage decides which screen is shown
@@ -47,6 +49,14 @@ function App() {
     setCurrentPage('results')
   }
 
+  // Resets everything back to the beginning
+  function handleRestart() {
+    setCurrentPage('welcome')
+    setSelectedLanguage(null)
+    setFormAnswers(null)
+    setActionPlan(null)
+  }
+
   return (
     <div>
       {currentPage === 'welcome' && ( // If we're on the welcome page, show the WelcomeScreen component and pass down the handleLanguageSelect function as a prop so that WelcomeScreen can call it when the user selects a language and clicks continue.
@@ -69,25 +79,16 @@ function App() {
       )}
 
       {currentPage === 'results' && (
-        <div style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div className="card" style={{
-            padding: '2rem',
-            maxWidth: '600px',
-            width: '90%'
-          }}>
-            <p style={{ color: 'var(--text-soft)' }}>
-              Results page coming next...
-            </p>
-          </div>
-        </div>
+        <ResultsPage
+          plan={actionPlan}
+          language={selectedLanguage}
+          onRestart={handleRestart}
+        />
       )}
     </div>
   )
 }
+
+
 
 export default App

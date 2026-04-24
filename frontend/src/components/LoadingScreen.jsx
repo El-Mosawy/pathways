@@ -46,8 +46,11 @@ function LoadingScreen({ answers, language, onComplete }) {
         // axios.post sends a POST request to our FastAPI backend
         // The second argument is the request body which are our form answers
         // plus the language the user chose
+//        const response = await axios.post(
+//          'http://localhost:8000/api/onboarding/submit',
+//          {
         const response = await axios.post(
-          'http://localhost:8000/api/onboarding/submit',
+          'https://pathways-6w0u.onrender.com/api/onboarding/submit', // this is the URL of our deployed backend, above is local dev URL
           {
             ...answers,
             preferred_language: language,
