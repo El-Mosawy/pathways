@@ -5,6 +5,7 @@
 import { useState } from 'react' // Importing useState hook from React to manage state in the component
 import WelcomeScreen from './components/WelcomeScreen' // Importing the WelcomeScreen component which is a child component that will be rendered inside App
 import OnboardingForm from './components/OnboardingForm'
+import LoadingScreen from './components/LoadingScreen'
 
 function App() {
   // currentPage decides which screen is shown
@@ -16,6 +17,9 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState(null)
 
   const [formAnswers, setFormAnswers] = useState(null)
+
+  const [actionPlan, setActionPlan] = useState(null)
+
 
   // Called by WelcomeScreen when user picks a language and clicks continue
   // It saves the language and moves to the next page
@@ -31,6 +35,18 @@ function App() {
     setCurrentPage('loading') // next i'll build the loading screen
   }
 
+  // Called when the loading screen gets the API response back
+  // plan is the action plan text from Gemini
+  function handlePlanReady(plan, error) {
+    if (error) {
+      // Later will build error screen, for now just log to console and stay on loading screen
+      console.error('Plan generation failed:', error)
+      return
+    }
+    setActionPlan(plan)
+    setCurrentPage('results')
+  }
+
   return (
     <div>
       {currentPage === 'welcome' && ( // If we're on the welcome page, show the WelcomeScreen component and pass down the handleLanguageSelect function as a prop so that WelcomeScreen can call it when the user selects a language and clicks continue.
@@ -44,7 +60,15 @@ function App() {
         />
       )}
 
-      {currentPage === 'loading' && ( //Just simple scren for loading page
+      {currentPage === 'loading' && (
+        <LoadingScreen
+          answers={formAnswers}
+          language={selectedLanguage}
+          onComplete={handlePlanReady}
+        />
+      )}
+
+      {currentPage === 'results' && (
         <div style={{
           minHeight: '100vh',
           display: 'flex',
@@ -53,12 +77,11 @@ function App() {
         }}>
           <div className="card" style={{
             padding: '2rem',
-            maxWidth: '480px',
-            width: '90%',
-            textAlign: 'center'
+            maxWidth: '600px',
+            width: '90%'
           }}>
             <p style={{ color: 'var(--text-soft)' }}>
-              Loading screen coming next...
+              Results page coming next...
             </p>
           </div>
         </div>
