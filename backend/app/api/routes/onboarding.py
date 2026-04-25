@@ -1,8 +1,13 @@
-from fastapi import APIRouter # 
+from fastapi import APIRouter, Request # 
 from app.models.onboarding import UserSituation # import the Pydantic model defined for validating the user's onboarding data
 from app.services.ai_service import generate_action_plan # import the function that will call the AI to generate the action plan
 from fastapi import HTTPException # for returning proper HTTP errors if something goes wrong with the AI
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
+# Each IP addres can only make 5 request per hr
+# This protects the Gemini API quota from abuse
+limiter = Limiter(key_func=get_remote_address)
 
 # APIRouter lets us group related endpoints together instead of defining everything in main.py
 # Kind of a mini FastAPI app for one specific feature
@@ -26,7 +31,8 @@ def submit_situation(data: UserSituation):
 # This is the endpoint that will receive the user's situation data from the frontend
 # FastAPI will read the HTTP method and the URL path of the incoming data to determine which function to run
 @router.post("/submit")
-def submit_situation(data: UserSituation):
+@limiter.limit("10/hour") # Here the rate limit is applied, each endpoint can only send 5
+def submit_situation(request: Request, data: UserSituation):
     # Pass the validated data to our AI service
     # The route doesn't know how the AI works, it just calls the service
     try: # try means run this block, if anything goes wrong, jump to the except block instead of crashing the server

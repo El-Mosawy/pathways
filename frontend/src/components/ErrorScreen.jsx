@@ -1,34 +1,53 @@
 
 // This component is shown when there's an error generating the action plan (could be server issue, API call failure, etc). 
 // It gives the user some information about what might be going on and reassures them that their answers haven't been lost, and encourages them to try again.
-function ErrorScreen({ onRetry }) {
+function ErrorScreen({ errorType, onRetry }) {
+
+  const isRateLimit = errorType === 'rate_limit'
+
   return (
     <div style={styles.container}>
       <div style={styles.card}>
 
         <div style={styles.iconContainer}>
-          <span style={styles.icon}>🌿</span>
+          <span style={styles.icon}>{isRateLimit ? '⏳' : '🌿'}</span>
         </div>
 
-        <h1 style={styles.title}>Something went wrong</h1>
+        <h1 style={styles.title}>
+          {isRateLimit ? 'Please wait a moment' : 'Something went wrong'}
+        </h1>
 
         <p style={styles.message}>
-          We were unable to generate your plan right now.
-          This is usually temporary — our service may be
-          starting up or experiencing high demand.
+          {isRateLimit
+            ? 'You have made several requests in a short period. This limit exists to keep the service running fairly for everyone.'
+            : 'We were unable to generate your plan right now. This is usually temporary — our service may be starting up or experiencing high demand.'
+          }
         </p>
 
         <p style={styles.submessage}>
-          Your answers have not been lost. Please try again
-          and your plan will be generated shortly.
+          {isRateLimit
+            ? (
+              <>
+                Please wait an hour before trying again. Your answers have been saved.
+                <br />
+                <span style={styles.limit}>Max 5 requests per hour :)</span>
+              </>
+            )
+            : 'Your answers have not been lost. Please try again and your plan will be generated shortly.'
+          }
         </p>
 
-        <button onClick={onRetry} style={styles.retryBtn}>
-          Try Again
-        </button>
+        {!isRateLimit && (
+          <button onClick={onRetry} style={styles.retryBtn}>
+            Try Again
+          </button>
+        )}
 
         <p style={styles.reassurance}>
-          If this keeps happening, please try again in a few minutes.
+          {isRateLimit
+            ? 'If you need urgent help, please contact a local immigration advice service.'
+            : 'If this keeps happening, please try again in a few minutes.'
+          }
         </p>
 
       </div>
@@ -95,6 +114,12 @@ const styles = {
     fontSize: '0.8rem',
     color: 'var(--text-placeholder)',
     lineHeight: '1.5',
+  },
+  limit: {
+    fontSize: '0.8rem',
+    color: 'var(--text-placeholder)',
+    marginTop: '0.25rem',
+    display: 'inline-block',
   },
 }
 

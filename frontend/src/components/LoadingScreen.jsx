@@ -67,6 +67,11 @@ function LoadingScreen({ answers, language, onComplete }) {
         } catch (error) {
             console.log(`Attempt ${attempt} failed:`, error.message)
 
+            if (error.response?.status === 429) { // if get 429 Too Many Requests, it means we've hit the rate limit
+                onComplete(null, { type: 'rate_limit' })
+                return
+            }
+
             if (attempt === maxRetries) {
             onComplete(null, error) // If we've reached the max retries, call onComplete with an error so App.jsx (for now it just logs to console but later we can show an error message to the user)
             return

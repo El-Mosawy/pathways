@@ -23,6 +23,8 @@ function App() {
 
   const [actionPlan, setActionPlan] = useState(null)
 
+  const [errorType, setErrorType] = useState(null)
+
 
   // Called by WelcomeScreen when user picks a language and clicks continue
   // It saves the language and moves to the next page
@@ -44,6 +46,7 @@ function App() {
     if (error || !plan) {
       // Something went wrong, show error screen
       setCurrentPage('error')
+      setErrorType(error?.type || 'server_error')
       return
     }
     setActionPlan(plan)
@@ -92,7 +95,10 @@ function App() {
       )}
 
       {currentPage === 'error' && (
-        <ErrorScreen onRetry={handleRetry} />
+        <ErrorScreen
+          errorType={errorType}
+          onRetry={handleRetry}
+        />
        )
       }
     </div>

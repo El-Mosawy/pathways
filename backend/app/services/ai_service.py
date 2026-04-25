@@ -109,14 +109,44 @@ def build_prompt(situation: UserSituation) -> str:
 
 # Core function of entire app — takes the user's situation and returns an action plan
 # Could experiment with other models later for better quality or more features (e.g. images, longer responses) but for now I am happy with it
-def generate_action_plan(situation: UserSituation) -> str:
-    """
-    Takes a validated UserSituation and returns a personalised action plan.
-    This is the core function of the entire application.
-    """
+"""def generate_action_plan(situation: UserSituation) -> str:
+    #Takes a validated UserSituation and returns a personalised action plan.
+    #This is the core function of the entire application.
     prompt = build_prompt(situation)
-    response = client.models.generate_content(
-        model='gemini-2.5-flash', # gemini-2.5-flash is free tier, fast, and high quality
-        contents=prompt
-    )
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash', # gemini-2.5-flash is free tier, fast, and high quality
+            contents=prompt
+        )
+        return response.text
+    except Exception as e:
+        print(f"Gemini API error: {e}")
+        raise"""
+
+def generate_action_plan(situation: UserSituation) -> str:
+    prompt = build_prompt(situation)
+
+    # Try models in order — if one fails, try the next
+    # This makes the app resilient to individual model quota exhaustion
+    models_to_try = [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+    ]
+
+    last_error = None
+    for model_name in models_to_try:
+        try:
+            print(f"Trying model: {model_name}")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
+            print(f"Success with model: {model_name}")
+            return response.text
+        except Exception as e:
+            print(f"Model {model_name} failed: {e}")
+            last_error = e
+            continue
+
+    # All models failed
+    raise last_error
