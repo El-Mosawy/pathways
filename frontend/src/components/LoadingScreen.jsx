@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react' // useEffect is for running side effects like timers and API calls (since we make first API call in this component)
+import { useState, useEffect, useRef } from 'react' // useEffect is for running side effects like timers and API calls (since we make first API call in this component)
 import axios from 'axios' // Axios to make HTTP request to our FastAPI backend
 import thoughtsImg from '../assets/thoughts.svg' // Simple illustration to make the loading screen less boring
 
@@ -8,41 +8,49 @@ import thoughtsImg from '../assets/thoughts.svg' // Simple illustration to make 
 // - onComplete: function to call when we have the result
 function LoadingScreen({ answers, language, onComplete }) {
 
-  // Which loading message is currently showing
-  const [messageIndex, setMessageIndex] = useState(0)
+    const hasFetched = useRef(false) // To prevent multiple API calls in case of retries
 
-  // These rotate while the user waits
-  // They reassure the user something real is happening
-  const messages = [
-    "Reading your situation...",
-    "Checking your entitlements...",
-    "Finding what support is available...",
-    "Building your personalised plan...",
-    "This can take up to a minute - please wait...",
-    "Almost ready...",
-  ]
 
-  // Rotate the message every 2.5 seconds
-  // This is a side effect which sets up a timer outside React
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // prev is the current index
-      // We use the modulo operator % to loop back to 0
-      // when we reach the end of the messages array
-      // e.g. if there are 5 messages: 4 % 5 = 4, 5 % 5 = 0 (loops back)
-      setMessageIndex(prev => (prev + 1) % messages.length)
-    }, 2500)
+    // Which loading message is currently showing
+    const [messageIndex, setMessageIndex] = useState(0)
 
-    // This is called a cleanup function
-    // When the component unmounts (disappears from screen)
-    // React runs this to stop the timer
-    // Without this the timer would keep running forever in the background
-    return () => clearInterval(interval)
-  }, [])
+    // These rotate while the user waits
+    // They reassure the user something real is happening
+    const messages = [
+        "Reading your situation...",
+        "Checking your entitlements...",
+        "Finding what support is available...",
+        "Building your personalised plan...",
+        "This can take up to a minute - please wait...",
+        "Almost ready...",
+    ]
+
+    // Rotate the message every 2.5 seconds
+    // This is a side effect which sets up a timer outside React
+    useEffect(() => {
+        const interval = setInterval(() => {
+        // prev is the current index
+        // We use the modulo operator % to loop back to 0
+        // when we reach the end of the messages array
+        // e.g. if there are 5 messages: 4 % 5 = 4, 5 % 5 = 0 (loops back)
+        setMessageIndex(prev => (prev + 1) % messages.length)
+        }, 2500)
+
+        // This is called a cleanup function
+        // When the component unmounts (disappears from screen)
+        // React runs this to stop the timer
+        // Without this the timer would keep running forever in the background
+        return () => clearInterval(interval)
+    }, [])
 
     // Fire the API call the moment this component appears on screen
     useEffect(() => {
     async function fetchPlan() {
+
+        if (hasFetched.current) return // If we've already fetched, do nothing
+        hasFetched.current = true // Mark that we've fetched to prevent future calls
+
+        let completed = false
         const maxRetries = 5 // If the API call fails, we will retry up to 5 times with a delay in between     
         const retryDelay = 8000  // 8 seconds delay between retries
         const apiUrl = import.meta.env.VITE_API_URL // Get API URL based on environment (dev or prod) from environment variable
@@ -61,7 +69,11 @@ function LoadingScreen({ answers, language, onComplete }) {
                 timeout: 35000 // 40 seconds timeout for the API call (cold starts can take a while)
             }
             )
-            onComplete(response.data.action_plan) // If successful, call onComplete with the action plan text from the API response
+            // only call onComplete if we haven't already completed successfully, to avoid calling it multiple times in case of retries which happened before this change
+            if (!completed) {
+                completed = true
+                onComplete(response.data.action_plan) // If successful, call onComplete with the action plan text from the API response
+            }
             return
 
         } catch (error) {
@@ -72,9 +84,11 @@ function LoadingScreen({ answers, language, onComplete }) {
                 return
             }
 
+            if (completed) return
+
             if (attempt === maxRetries) {
-            onComplete(null, error) // If we've reached the max retries, call onComplete with an error so App.jsx (for now it just logs to console but later we can show an error message to the user)
-            return
+                onComplete(null, error) // If we've reached the max retries, call onComplete with an error so App.jsx (for now it just logs to console but later we can show an error message to the user)
+                return
             }
 
             await new Promise(resolve => setTimeout(resolve, retryDelay))

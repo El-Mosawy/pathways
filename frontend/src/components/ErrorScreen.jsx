@@ -3,6 +3,7 @@
 // It gives the user some information about what might be going on and reassures them that their answers haven't been lost, and encourages them to try again.
 function ErrorScreen({ errorType, onRetry }) {
 
+
   const isRateLimit = errorType === 'rate_limit'
 
   return (

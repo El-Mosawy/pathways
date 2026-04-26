@@ -109,3 +109,35 @@ button:focus-visible {
 .page-container {
   padding-top: 60px;
 }
+
+/* ── Print styles — used when user saves as PDF ── */
+@media print {
+
+  /* Hide everything except the results */
+  .app-header,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset background for clean PDF */
+  body {
+    background: white;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  /* Make cards look clean on paper */
+  .print-card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #E8E0D5;
+    margin-bottom: 1rem;
+  }
+
+  /* Show print-only elements */
+  .print-only {
+    display: block !important;
+  }
+}
