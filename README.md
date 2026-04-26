@@ -1,4 +1,4 @@
-# Pathways 🧭
+# Pathways
 
 **A personalised rights and entitlements navigator for people needing to navigate the UK immigration system.**
 
