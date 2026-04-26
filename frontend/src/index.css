@@ -93,6 +93,8 @@ button:focus-visible {
   z-index: 100;
   display: flex;
   align-items: center;
+  background-color: var(--bg);
+
 }
 
 .app-logo {
