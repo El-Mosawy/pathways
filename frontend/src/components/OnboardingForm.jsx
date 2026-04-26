@@ -5,7 +5,7 @@ import walkingImg from '../assets/walking.svg'
 // - language: the language the user selected on the welcome screen
 // - onComplete: a function to call when the form is done,
 //               passing the completed answers object up to App.jsx
-function OnboardingForm({ language, onComplete }) {
+function OnboardingForm({ language, onComplete, onBack }) {
 
   // currentStep tracks which question we're on
   // Starts at 0 — the first question
@@ -168,7 +168,13 @@ function OnboardingForm({ language, onComplete }) {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-
+        {/* Back to language selection */}
+        <button
+          onClick={onBack}
+          style={styles.backToStart}
+        >
+          ← Change language
+        </button>
         {/* Top section — illustration and progress */}
         <div style={styles.topSection}>
           <img
@@ -479,6 +485,18 @@ const styles = {
     background: 'var(--border)',
     color: 'var(--text-placeholder)',
     cursor: 'not-allowed',
+  },
+  backToStart: {
+    background: 'transparent',
+    border: 'none',
+    color: 'var(--text-soft)',
+    fontSize: '0.8rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    padding: '0 0 1rem 0',
+    fontFamily: 'Nunito, sans-serif',
+    display: 'block',
+    transition: 'color 0.2s ease',
   },
 }
 

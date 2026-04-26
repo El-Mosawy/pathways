@@ -153,7 +153,7 @@ const styles = {
   },
   languageGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
     gap: '0.5rem',
     marginBottom: '1.5rem',
   },

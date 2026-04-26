@@ -65,8 +65,18 @@ function App() {
     setActionPlan(null)
   }
 
+  function handleBack() {
+    setCurrentPage('welcome')
+    setSelectedLanguage(null)
+    setFormAnswers(null)
+  }
+
   return (
     <div>
+      <header className="app-header">
+        <span className="app-logo">Pathways</span>
+      </header>
+      
       {currentPage === 'welcome' && ( // If we're on the welcome page, show the WelcomeScreen component and pass down the handleLanguageSelect function as a prop so that WelcomeScreen can call it when the user selects a language and clicks continue.
         <WelcomeScreen onLanguageSelect={handleLanguageSelect} />
       )}
@@ -75,6 +85,7 @@ function App() {
         <OnboardingForm
           language={selectedLanguage} // Pass down the selected language as a prop so that OnboardingForm can use it to display content in the correct language.
           onComplete={handleFormComplete} // Pass down the handleFormComplete function as a prop so that OnboardingForm can call it when the user completes the form and submits their answers.
+          onBack={handleBack} // Pass down the handleBack function as a prop so that OnboardingForm can call it when the user clicks the back button.
         />
       )}
 

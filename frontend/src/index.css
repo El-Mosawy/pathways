@@ -82,3 +82,28 @@ button:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* ── Persistent header ── */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+.app-logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent-warm);
+  font-family: 'Nunito', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* ── Push all page content below the fixed header ── */
+.page-container {
+  padding-top: 60px;
+}
