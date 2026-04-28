@@ -2,13 +2,14 @@
 // responsible for rendering the main structure of the app
 // Its main function is to render the content of the app.
 
-import { useState } from 'react' // Importing useState hook from React to manage state in the component
+import { useState, useEffect} from 'react' // Importing useState hook from React to manage state in the component
 import WelcomeScreen from './components/WelcomeScreen' // Importing the WelcomeScreen component which is a child component that will be rendered inside App
 import OnboardingForm from './components/OnboardingForm'
 import LoadingScreen from './components/LoadingScreen'
 import ResultsPage from './components/ResultsPage'
 import ErrorScreen from './components/ErrorScreen.jsx'
-
+import axios from 'axios'
+import SharedPlanLoader from './components/SharedPlanLoader.jsx'
 
 function App() {
   // currentPage decides which screen is shown
@@ -25,6 +26,32 @@ function App() {
 
   const [errorType, setErrorType] = useState(null)
 
+  // Check if the URL contains a plan ID when the app first loads
+  // e.g. pathways-liard.vercel.app/plan/abc123
+  useEffect(() => {
+    const path = window.location.pathname
+    const match = path.match(/^\/plan\/([a-zA-Z0-9]+)$/)
+
+    if (match) {
+      const planId = match[1]
+      fetchSharedPlan(planId)
+    }
+  }, [])
+
+  // Fetches a shared plan from the backend by ID
+  async function fetchSharedPlan(planId) {
+    setCurrentPage('loading_shared')
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL
+      const response = await axios.get(`${apiUrl}/api/plans/${planId}`)
+      setActionPlan(response.data.plan_text)
+      setSelectedLanguage(response.data.language)
+      setCurrentPage('results')
+    } catch (error) {
+      setCurrentPage('error')
+      setErrorType('not_found')
+    }
+  }
 
   // Called by WelcomeScreen when user picks a language and clicks continue
   // It saves the language and moves to the next page
@@ -110,6 +137,10 @@ function App() {
           errorType={errorType}
           onRetry={handleRetry}
         />
+       )
+      }
+      {currentPage === 'loading_shared' && (
+        <SharedPlanLoader />
        )
       }
     </div>

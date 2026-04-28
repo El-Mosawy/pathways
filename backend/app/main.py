@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import onboarding  # import the onboarding router I created
+from app.api.routes import onboarding, plans  # import the onboarding router I created
 import asyncio
 
 import warnings
@@ -38,6 +38,7 @@ app.add_middleware(
 )
 
 app.include_router(onboarding.router)  # This tells FastAPI to include the endpoints defined in onboarding.py    
+app.include_router(plans.router)  # This tells FastAPI to include the endpoints defined in plans.py
 
 # First endpoint — a health check
 # Confirms the server is alive

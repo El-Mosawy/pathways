@@ -3,6 +3,9 @@
 // - language: the user's chosen language
 // - onRestart: function to go back to the beginning
 import DeadlineTimeline from './DeadlineTimeline' // This is the component that renders the visual timeline of deadlines, it parses the structured DEADLINE lines from the AI output and displays them in a nice format with colour coding based on urgency.
+import { useState } from 'react'
+import axios from 'axios'
+
 
 function ResultsPage({ plan, language, onRestart }) {
 
@@ -32,11 +35,34 @@ function ResultsPage({ plan, language, onRestart }) {
     },
   ]
 
+  // State for the share functionality
+  const [shareUrl, setShareUrl] = useState(null)
+  const [sharing, setSharing] = useState(false)
+
   // this will allow the user to save the plan as a PDF
   function handleDownload() {
     setTimeout(() => {
       window.print()
     }, 100)
+  }
+
+  // Saves the plan to the database and generates a shareable URL
+  async function handleShare() {
+    setSharing(true)
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL
+      const response = await axios.post(`${apiUrl}/api/plans/save`, {
+        plan_text: plan,
+        language: language || 'english',
+      })
+      const id = response.data.id
+      const url = `${window.location.origin}/plan/${id}`
+      setShareUrl(url)
+    } catch (error) {
+      console.error('Failed to share plan:', error)
+    } finally {
+      setSharing(false)
+    }
   }
 
   // Extracts content between [SECTION:NAME] and [/SECTION] markers
@@ -170,6 +196,40 @@ function ResultsPage({ plan, language, onRestart }) {
         >
           ↓ Save as PDF
         </button>
+
+        {/* Share button — hidden when printing */}
+        <button
+          onClick={handleShare}
+          className="no-print"
+          style={{
+            ...styles.shareBtn,
+            ...(sharing ? styles.shareBtnLoading : {})
+          }}
+          disabled={sharing}
+        >
+          {sharing ? 'Saving...' : '↗ Share Plan'}
+        </button>
+
+        {/* Shareable URL — shown after share button clicked */}
+        {shareUrl && (
+          <div style={styles.shareUrlContainer} className="no-print">
+            <p style={styles.shareUrlLabel}>
+              Anyone with this link can view your plan:
+            </p>
+            <div style={styles.shareUrlBox}>
+              <span style={styles.shareUrlText}>{shareUrl}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(shareUrl)
+                }}
+                style={styles.copyBtn}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Print-only header - only visible in PDF */}
         <div className="print-only" style={{ display: 'none', marginTop: '0.5rem' }}>
           <p style={{ fontSize: '0.8rem', color: '#6B6560' }}>
@@ -376,6 +436,69 @@ const styles = {
     marginTop: '1rem',
     marginBottom: '0.4rem',
   },
+
+  shareBtn: {
+    marginTop: '0.75rem',
+    background: 'transparent',
+    color: 'var(--primary)',
+    padding: '0.75rem 1.75rem',
+    borderRadius: '50px',
+    fontSize: '0.95rem',
+    fontWeight: '600',
+    border: 'none',
+    boxShadow: 'inset 0 0 0 1.5px var(--primary)',
+    cursor: 'pointer',
+    fontFamily: 'Nunito, sans-serif',
+    transition: 'background 0.2s ease, box-shadow 0.2s ease',
+    marginLeft: '0.75rem',
+  },
+  shareBtnLoading: {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+  shareUrlContainer: {
+    marginTop: '1.25rem',
+    padding: '1rem 1.25rem',
+    background: 'var(--primary-light)',
+    borderRadius: 'var(--radius-sm)',
+    textAlign: 'left',
+  },
+  shareUrlLabel: {
+    fontSize: '0.8rem',
+    color: 'var(--text-soft)',
+    marginBottom: '0.5rem',
+    fontWeight: '600',
+  },
+  shareUrlBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    background: 'var(--surface)',
+    borderRadius: '50px',
+    padding: '0.5rem 0.5rem 0.5rem 1rem',
+  },
+  shareUrlText: {
+    fontSize: '0.8rem',
+    color: 'var(--text)',
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  copyBtn: {
+    background: 'var(--primary)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50px',
+    padding: '0.4rem 1rem',
+    fontSize: '0.8rem',
+    fontWeight: '700',
+    cursor: 'pointer',
+    fontFamily: 'Nunito, sans-serif',
+    flexShrink: 0,
+    transition: 'background 0.2s ease',
+  },
+
 }
 
 export default ResultsPage
