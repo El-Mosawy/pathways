@@ -166,8 +166,8 @@ function OnboardingForm({ language, onComplete, onBack }) {
   const isAnswered = currentAnswer !== undefined && currentAnswer !== ''
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
+    <div style={styles.container} className="page-enter">
+      <div style={styles.card} className="card">
         {/* Back to language selection */}
         <button
           onClick={onBack}
@@ -200,7 +200,7 @@ function OnboardingForm({ language, onComplete, onBack }) {
         </div>
 
         {/* Question */}
-        <div style={styles.questionSection}>
+        <div key={currentStep} style={styles.questionSection} className="page-enter">
           <h2 style={styles.questionText}>
             {currentQuestion?.question}
           </h2>

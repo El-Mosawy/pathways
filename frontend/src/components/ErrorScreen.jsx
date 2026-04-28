@@ -7,9 +7,8 @@ function ErrorScreen({ errorType, onRetry }) {
   const isRateLimit = errorType === 'rate_limit'
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-
+    <div style={styles.container} className="page-enter">
+      <div style={styles.card} className="card">
         <div style={styles.iconContainer}>
           <span style={styles.icon}>{isRateLimit ? '⏳' : '🌿'}</span>
         </div>

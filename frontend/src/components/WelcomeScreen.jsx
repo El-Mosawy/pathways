@@ -31,10 +31,10 @@ function WelcomeScreen({ onLanguageSelect }) {
   ]
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="page-enter">
 
       {/* Main card */}
-      <div style={styles.card}>
+      <div style={styles.card} className="card">
 
         {/* Illustration at the top */}
         <img

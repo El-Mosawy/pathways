@@ -83,6 +83,11 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* ── Universal button lift ── */
+button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
 /* ── Persistent header ── */
 .app-header {
   position: fixed;
@@ -108,6 +113,56 @@ button:focus-visible {
 /* ── Push all page content below the fixed header ── */
 .page-container {
   padding-top: 60px;
+}
+
+/* ── Card enhancements ── */
+.card {
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary),
+    transparent
+  );
+  border-radius: 0 0 4px 4px;
+  opacity: 100;
+  pointer-events: none;
+}
+
+/* ── Input focus state ── */
+input[type="text"]:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--primary), 0 0 0 3px var(--primary-light);
+}
+
+/* ── Page transition ── */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* ── Print styles — used when user saves as PDF ── */

@@ -44,32 +44,64 @@ def build_prompt(situation: UserSituation) -> str:
     Generate a personalised action plan with EXACTLY this structure.
     Use these exact section markers so the frontend can parse them:
 
-    [SECTION:STATUS]
-    Explain in plain simple language what their current immigration
-    status means for their rights and entitlements right now.
-    [/SECTION]
-
-    [SECTION:IMMEDIATE]
-    List the most urgent actions they must take in the next 30 days.
-    Number each action. Be specific — name the exact benefit,
-    service, or application. Start with the single most important thing.
+     [SECTION:STATUS]
+    Start with a warm, reassuring opening sentence.
+    Then explain in plain simple language what their current immigration
+    status means for their daily life and rights right now.
+    Keep this focused on giving them context and confidence — not alarm.
     [/SECTION]
 
     [SECTION:ENTITLEMENTS]
-    List everything they are currently entitled to access.
-    Benefits, housing, healthcare, work rights, education.
-    Do not list things they are barred from due to their status.
+    This is the good news section. List everything they can currently access.
+    
+    Use this exact format for each entitlement — do NOT use sub-bullets or
+    nested lists. Each entitlement should be its own clearly separated item:
+
+    Benefit or service name: Plain explanation of what it is and who qualifies.
+    Where to access: specific URL or organisation name.
+
+    Leave a blank line between each entitlement so they are clearly separated.
+    Cover: benefits, housing, healthcare, work rights, education, legal aid.
+    Do NOT list things they are barred from due to their status or NRPF.
     [/SECTION]
 
-    [SECTION:DEADLINES]
-    Flag any time-sensitive situations. Move-on periods,
-    visa renewals, application windows, reporting requirements.
-    If there are no urgent deadlines, say so clearly.
+    [SECTION:ACTIONS]
+    This is their personalised to-do list. Number each action.
+    For each action:
+    - State clearly what they need to do
+    - Explain briefly WHY it matters for their specific situation
+    - Tell them exactly WHERE to do it — include the specific GOV.UK page,
+      phone number, or organisation. For example:
+      "Apply at gov.uk/universal-credit"
+      "Call the Refugee Council helpline on 0808 196 7272"
+      "Visit your local Jobcentre Plus — find yours at gov.uk/contact-jobcentre-plus"
+    Order actions by urgency — most important first.
+    Be specific. Generic advice like "seek legal help" is not enough —
+    tell them exactly where to get it.
     [/SECTION]
 
     [SECTION:NEXT]
-    What should they work towards over the next 1 to 6 months.
-    Give them a sense of direction and hope.
+    Look 1 to 6 months ahead. Give them a sense of direction and hope.
+    Include specific next applications, milestones, or goals they can work toward.
+    Where relevant, include links or organisations that can help them get there.
+    End with a warm, encouraging closing sentence.
+    [/SECTION]
+
+    [SECTION:TIMELINE]
+    List every concrete deadline or time-sensitive milestone for this person.
+    Use ONLY this exact format for each item, one per line:
+    DEADLINE:timeframe|description|urgency
+
+    Where:
+    - timeframe is something like "28 days", "3 months", "12 months", "30 months"
+    - description is a single plain sentence of what needs to happen, maximum 10 words
+    - urgency is exactly one of: critical, warning, info
+
+    Use critical for deadlines within 30 days.
+    Use warning for deadlines within 3 months.
+    Use info for anything beyond 3 months.
+
+    If there are no concrete deadlines, write: NO_DEADLINES
     [/SECTION]
 
     CRITICAL UK POLICY RULES AS OF APRIL 2026 - APPLY THESE ACCURATELY:

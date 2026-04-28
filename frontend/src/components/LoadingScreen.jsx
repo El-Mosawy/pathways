@@ -100,9 +100,8 @@ function LoadingScreen({ answers, language, onComplete }) {
     }, [])
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-
+    <div style={styles.container} className="page-enter">
+      <div style={styles.card} className="card">
         {/* Illustration */}
         <img
           src={thoughtsImg}

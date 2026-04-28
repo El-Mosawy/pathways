@@ -2,6 +2,8 @@
 // - plan: the raw action plan string from the AI
 // - language: the user's chosen language
 // - onRestart: function to go back to the beginning
+import DeadlineTimeline from './DeadlineTimeline' // This is the component that renders the visual timeline of deadlines, it parses the structured DEADLINE lines from the AI output and displays them in a nice format with colour coding based on urgency.
+
 function ResultsPage({ plan, language, onRestart }) {
 
   // Each section has a name matching our markers,
@@ -12,20 +14,16 @@ function ResultsPage({ plan, language, onRestart }) {
       title: 'Your Current Status',
       icon: '📋',
     },
-    {
-      key: 'IMMEDIATE',
-      title: 'Immediate Actions',
-      icon: '⚡',
-    },
+
     {
       key: 'ENTITLEMENTS',
       title: 'What You Are Entitled To',
       icon: '✅',
     },
     {
-      key: 'DEADLINES',
-      title: 'Important Deadlines',
-      icon: '📅',
+      key: 'ACTIONS',
+      title: 'Your Action Plan',
+      icon: '⚡',
     },
     {
       key: 'NEXT',
@@ -55,6 +53,29 @@ function ResultsPage({ plan, language, onRestart }) {
     return plan.slice(contentStart, contentEnd).trim()
   }
 
+  function renderWithLinks(text) {
+    const urlRegex = /((?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+\.)+(?:uk|org|com|net)(?:\/[^\s,)]*)?)/g
+    const parts = text.split(urlRegex)
+ 
+    return parts.map((part, i) => {
+      if (urlRegex.test(part) || /gov\.uk|nhs\.uk|citizensadvice|settled\.org|refugee|council\.uk/.test(part)) {
+        const href = part.startsWith('http') ? part : `https://${part}`
+        return (
+          <a
+            key={i}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.link}
+          >
+            {part}
+          </a>
+        )
+      }
+      return part
+    })
+  }
+
   // Converts the plain text content into readable JSX
   // Handles numbered lists, bullet points, and bold text
   function renderContent(text) {
@@ -79,28 +100,50 @@ function ResultsPage({ plan, language, onRestart }) {
                     {trimmed.match(/^\d+/)[0]}
                   </span>
                   <span style={styles.listText}>
-                    {trimmed.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1')}
+                    {renderWithLinks(trimmed.replace(/^\d+\.\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1'))}
                   </span>
                 </div>
               )
             }
 
+ 
             // Bullet point e.g. "* Something" or "- Something"
             if (/^[\*\-•]/.test(trimmed)) {
+              const content = trimmed
+                .replace(/^[\*\-•]\s*/, '')
+                .replace(/\*\*(.*?)\*\*/g, '$1')
+                .replace(/\*(.*?)\*/g, '$1')
+ 
+              // Detect category headers — short lines ending with a colon
+              // e.g. "Benefits:", "Housing:", "Healthcare:"
+              const isHeader = content.endsWith(':') && content.length < 40
+ 
+              if (isHeader) {
+                return (
+                  <p key={lineIndex} style={styles.categoryHeader}>
+                    {content}
+                  </p>
+                )
+              }
+ 
               return (
                 <div key={lineIndex} style={styles.bulletItem}>
                   <span style={styles.bullet}>·</span>
                   <span style={styles.listText}>
-                    {trimmed.replace(/^[\*\-•]\s*/, '').replace(/\*\*(.*?)\*\*/g, '$1')}
+                    {renderWithLinks(content)}
                   </span>
                 </div>
               )
             }
-
+ 
             // Regular paragraph line
             return (
               <p key={lineIndex} style={styles.paragraph}>
-                {trimmed.replace(/\*\*(.*?)\*\*/g, '$1')}
+                {renderWithLinks(
+                  trimmed
+                    .replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/\*(.*?)\*/g, '$1')
+                )}
               </p>
             )
           })}
@@ -110,7 +153,7 @@ function ResultsPage({ plan, language, onRestart }) {
   }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="page-enter">
 
       {/* Header */}
       <div style={styles.header}>
@@ -142,8 +185,7 @@ function ResultsPage({ plan, language, onRestart }) {
           if (!content) return null
 
           return (
-            <div key={section.key} style={styles.card} className="print-card">
-
+            <div key={section.key} style={styles.card} className="print-card card">
               {/* Card header */}
               <div style={styles.cardHeader}>
                 <span style={styles.icon}>{section.icon}</span>
@@ -159,6 +201,9 @@ function ResultsPage({ plan, language, onRestart }) {
           )
         })}
       </div>
+
+      {/* Deadline Timeline,  appears before section cards */}
+      <DeadlineTimeline plan={plan} />
 
       {/* Footer — restart button */}
       <div style={styles.footer} className="no-print">
@@ -210,6 +255,7 @@ const styles = {
     boxShadow: 'var(--shadow)',
     padding: '1.75rem',
     transition: 'box-shadow 0.2s ease',
+    position: 'relative',
   },
   cardHeader: {
     display: 'flex',
@@ -313,6 +359,22 @@ const styles = {
     cursor: 'pointer',
     fontFamily: 'Nunito, sans-serif',
     transition: 'background 0.2s ease, box-shadow 0.2s ease',
+  },
+  link: {
+    color: 'var(--primary)',
+    fontWeight: '600',
+    textDecoration: 'underline',
+    textDecorationColor: 'var(--primary-light)',
+    textUnderlineOffset: '3px',
+  },
+  categoryHeader: {
+    fontSize: '0.85rem',
+    fontWeight: '700',
+    color: 'var(--text-soft)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.06em',
+    marginTop: '1rem',
+    marginBottom: '0.4rem',
   },
 }
 
