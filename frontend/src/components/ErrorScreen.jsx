@@ -53,6 +53,19 @@ function ErrorScreen({ errorType, onRetry }) {
           </button>
         )}
 
+        {/* Button to go home for not found error */}
+        {isNotFound && (
+          <button
+            onClick={() => {
+              window.history.pushState({}, '', '/') // removes plan id from url
+              window.location.reload() // reloads the page to show the welcome screen
+            }}
+            style={styles.retryBtn} // reusing the retry button styles for consistency
+          >
+            Go to Home Page
+          </button>
+        )}
+
         <p style={styles.reassurance}>
           {isRateLimit
             ? 'If you need urgent help, please contact a local immigration advice service.'
