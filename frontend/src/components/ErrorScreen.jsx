@@ -5,7 +5,7 @@ function ErrorScreen({ errorType, onRetry }) {
 
 
   const isRateLimit = errorType === 'rate_limit' // this basically determines whether the error was due to hitting the rate limit or some other issue, so we can show a different message in that case to explain why they have to wait and that their answers have been saved and will be there when they try again after waiting. If it's not a rate limit issue, we show a more generic error message but still reassure them that their answers haven't been lost and encourage them to try again.
-  const isNotFound = errorType === 'not_found'  
+  const isNotFound = errorType === 'not_found'  // this means the plan id in the url doesn't match any plan in the database, which could be because the plan was deleted after being generated (plans are currently set to expire and be deleted after 7 days to save storage space), or because the user manually entered an invalid url. In this case we show a message explaining that the plan can't be found and give them a button to go back to the home page to start a new plan if they want. We don't show a retry button in this case because retrying won't help — they need to start a new plan. The most likely reason for this error is that the user is trying to access a shared plan that has expired, so we want to explain that clearly and give them a path forward.
 
   return (
     <div style={styles.container} className="page-enter">
