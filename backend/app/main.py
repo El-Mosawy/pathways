@@ -8,6 +8,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from app.api.routes.plans import supabase
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -49,4 +50,10 @@ def health_check():
 # Keepalive endpoint — pinged every 14 minutes to prevent cold starts (cause some hosting platforms put your server to sleep after 15 mins of inactivity)
 @app.get("/ping")
 def ping():
-    return {"status": "alive"}
+    try:
+        # Query Supabase to keep it alive
+        # Selects one row from plans table (lightweight but sufficient)
+        supabase.table("plans").select("id").limit(1).execute()
+        return {"status": "alive", "supabase": "ok"}
+    except Exception as e:
+        return {"status": "alive", "supabase": "error", "detail": str(e)}

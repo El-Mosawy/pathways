@@ -43,7 +43,7 @@ function App() {
     setCurrentPage('loading_shared')
     try {
       const apiUrl = import.meta.env.VITE_API_URL
-      const response = await axios.get(`${apiUrl}/api/plans/${planId}`)
+      const response = await axios.get(`${apiUrl}/api/plans/${planId}`) // This endpoint returns the plan text and the language it was generated in based on the plan ID in the URL. If the plan ID is invalid or expired, it throws an error which we catch to show a not found message.
       setActionPlan(response.data.plan_text)
       setSelectedLanguage(response.data.language)
       setCurrentPage('results')
